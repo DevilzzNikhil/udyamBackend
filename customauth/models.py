@@ -18,6 +18,7 @@ YEARS = (
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, password=None):
+        print(email,password)
         if not email:
             raise ValueError("The Email must be set")
         
@@ -53,7 +54,7 @@ class UserAcount(AbstractBaseUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
-    object = AccountManager()
+    objects = AccountManager()
 
     def __str__(self):
         return f"{self.email}"

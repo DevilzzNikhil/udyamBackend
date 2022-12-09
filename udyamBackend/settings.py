@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'customauth',
+    "corsheaders",
 
 ]
 
@@ -33,6 +34,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 REST_FRAMEWORK = {
@@ -60,6 +62,9 @@ TEMPLATES = [
     },
 ]
 
+
+AUTH_USER_MODEL = "customauth.UserAcount"
+AUTHENTICATION_BACKENDS = ['customauth.backend.EmailBackend']
 WSGI_APPLICATION = 'udyamBackend.wsgi.application'
 
 
@@ -104,7 +109,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-CLIENT_ID = "a625198635648-c57qbgbqqjsu9220bbvrp7scuoc196np.apps.googleusercontent.com"
+
+CLIENT_ID = "868476725043-56q2l17h7bf2a1fpvkqp04t5br7mti4p.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

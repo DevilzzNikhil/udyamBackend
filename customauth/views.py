@@ -12,8 +12,6 @@ import requests
 
 GOOGLE_ID_TOKEN_INFO_URL = 'https://www.googleapis.com/oauth2/v3/tokeninfo'
 
-print(CLIENT_ID)
-
 def google_validate(*, id_token:str)-> bool:
 
     response = requests.get(
@@ -31,36 +29,37 @@ def google_validate(*, id_token:str)-> bool:
     return True
 
 
-def user_create(email, **extra_fields) -> UserAcount:
+def user_create(email, **extra_field) -> UserAcount:
+    # print(extra_field)
     extra_fields = {
         'is_staff': False,
-        'is_active':False,
-        **extra_fields
+        'is_active':True,
+        **extra_field
     }
 
     print(extra_fields)
 
     user = UserAcount(email=email, **extra_fields)
-
-    user.full_clean()
     user.save()
-
+    print(user)
     return 
 
 
 def user_get_or_create(*, email: str, **extra_data) -> Tuple[UserAcount, bool]:
+    # print(email)
     user = UserAcount.objects.filter(email=email).first()
 
     if user:
         return user, False
-
+    # print(extra_data)
     return user_create(email=email, **extra_data), True
 
-def user_get_me(*, user: UserAcount):
+def user_get_me(*, user: UserAcount, bool):
     return {
         'id': user.id,
         'name': user.name,
-        'email': user.email
+        'email': user.email,
+        'message': "You have registered Suceesfully" if bool else "You have logged in successfully",
     }
 
 
@@ -82,16 +81,13 @@ class UserInitApi(APIView):
         serializer.is_valid(raise_exception=True)
 
         user, bool = user_get_or_create(**serializer.validated_data)
+        print("hi",user)
 
-        print(request.data)
-
-        response = Response(data=user_get_me(user=user))
-        register_response = Response("You have registered Suceesfully")
-        login_response = Response("You have logged in successfully")
+        response = Response(data=user_get_me(user=user, bool = bool))
         if bool :
-            return register_response
+            return response
         else :
-            return login_response
+            return response
 
 
 
