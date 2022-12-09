@@ -37,7 +37,7 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES":(
-        "rest_framework.authetication.TokenAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
     )
 }
 
@@ -103,5 +103,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+CLIENT_ID = "a625198635648-c57qbgbqqjsu9220bbvrp7scuoc196np.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
