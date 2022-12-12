@@ -1,18 +1,20 @@
-from rest_framework import serializers
-from rest_framework.views import APIView
+from rest_framework import serializers, generics
+# from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import UserAcount
-from django.conf import settings
-from django.http import HttpResponse
+# from django.conf import settings
+# from django.http import HttpResponse
 from django.core.exceptions import ValidationError
 from typing import Tuple
 from udyamBackend.settings import CLIENT_ID
 import requests
+# from django.contrib.auth import login, logout
+# from rest_framework.authtoken.models import Token
 
 
 GOOGLE_ID_TOKEN_INFO_URL = 'https://www.googleapis.com/oauth2/v3/tokeninfo'
 
-def google_validate(*, id_token:str)-> bool:
+def google_validate(*, id_token: str) -> bool:
 
     response = requests.get(
         GOOGLE_ID_TOKEN_INFO_URL,
@@ -21,11 +23,11 @@ def google_validate(*, id_token:str)-> bool:
 
     if not response.ok:
         raise ValidationError('Id token is invalid')
-    
+
     audience = response.json()['aud']
     if audience != CLIENT_ID:
         raise ValidationError("Invalid Audience")
-    
+
     return True
 
 
@@ -33,7 +35,7 @@ def user_create(email, **extra_field) -> UserAcount:
     # print(extra_field)
     extra_fields = {
         'is_staff': False,
-        'is_active':True,
+        'is_active': True,
         **extra_field
     }
 
@@ -41,8 +43,7 @@ def user_create(email, **extra_field) -> UserAcount:
 
     user = UserAcount(email=email, **extra_fields)
     user.save()
-    print(user)
-    return 
+    return user
 
 
 def user_get_or_create(*, email: str, **extra_data) -> Tuple[UserAcount, bool]:
@@ -62,10 +63,7 @@ def user_get_me(*, user: UserAcount, bool):
         'message': "You have registered Suceesfully" if bool else "You have logged in successfully",
     }
 
-
-
-
-class UserInitApi(APIView):
+class UserInitApi(generics.GenericAPIView):
     class InputSerializer(serializers.Serializer):
         email = serializers.EmailField()
         name = serializers.CharField(required=True)
@@ -73,7 +71,7 @@ class UserInitApi(APIView):
         year = serializers.CharField(required=True)
         phone_number = serializers.CharField(required=True)
 
-    def post(self,request,*args, **kwargs):
+    def post(self, request, *args, **kwargs):
         id_token = request.headers.get('Authorization')
         google_validate(id_token=id_token)
 
@@ -81,13 +79,11 @@ class UserInitApi(APIView):
         serializer.is_valid(raise_exception=True)
 
         user, bool = user_get_or_create(**serializer.validated_data)
-        print("hi",user)
+        # login(request=request,user=user)
+        print("loggin sucess")
 
-        response = Response(data=user_get_me(user=user, bool = bool))
-        if bool :
+        response = Response(data=user_get_me(user=user, bool=bool))
+        if bool:
             return response
-        else :
+        else:
             return response
-
-
-
